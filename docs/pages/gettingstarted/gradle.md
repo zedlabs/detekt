@@ -65,10 +65,6 @@ Using the plugins DSL:
 plugins {
     id "io.gitlab.arturbosch.detekt" version "{{ site.detekt_version }}"
 }
-
-repositories {
-    jcenter() // jcenter is needed https://github.com/Kotlin/kotlinx.html/issues/81
-}
 ```
 
 #### Kotlin DSL
@@ -76,10 +72,6 @@ repositories {
 ```kotlin
 plugins {
     id("io.gitlab.arturbosch.detekt").version("{{ site.detekt_version }}")
-}
-
-repositories {
-    jcenter() // jcenter is needed https://github.com/Kotlin/kotlinx.html/issues/81
 }
 ```
 
@@ -98,10 +90,6 @@ buildscript {
 }
 
 apply plugin: "io.gitlab.arturbosch.detekt"
-
-repositories {
-    jcenter() // jcenter is needed https://github.com/Kotlin/kotlinx.html/issues/81
-}
 ```
 
 #### Kotlin DSL
@@ -117,10 +105,6 @@ buildscript {
 }
 
 apply(plugin = "io.gitlab.arturbosch.detekt")
-
-repositories {
-    jcenter() // jcenter is needed https://github.com/Kotlin/kotlinx.html/issues/81
-}
 ```
 
 ### <a name="gradleandroid">Configuration for Android projects</a>
@@ -135,7 +119,7 @@ You can configure the plugin in the same way as indicated above.
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         gradlePluginPortal()
     }
     dependencies {
@@ -148,10 +132,6 @@ plugins {
     id "org.jetbrains.kotlin.android" version "1.4.0"
     id "io.gitlab.arturbosch.detekt" version "{{ site.detekt_version }}"
 }
-
-repositories {
-    jcenter() // jcenter is needed https://github.com/Kotlin/kotlinx.html/issues/81
-}
 ```
 
 #### Kotlin DSL
@@ -160,7 +140,7 @@ repositories {
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         gradlePluginPortal()
     }
     dependencies {
@@ -172,10 +152,6 @@ plugins {
     id("com.android.application")
     kotlin("android") version "1.4.0"
     id("io.gitlab.arturbosch.detekt") version "{{ site.detekt_version }}"
-}
-
-repositories {
-    jcenter() // jcenter is needed https://github.com/Kotlin/kotlinx.html/issues/81
 }
 ```
 
@@ -484,20 +460,3 @@ Instead of disabling detekt for the check task, you may want to increase the bui
 detekt comes with an [IntelliJ Plugin](https://plugins.jetbrains.com/plugin/10761-detekt) that you can install directly from the IDE. The plugin offers warning highlight directly inside the IDE as well as support for code formatting.
 
 The source code of the plugin is available here: [detekt/detekt-intellij-plugin](https://github.com/detekt/detekt-intellij-plugin)
-
-## <a name="repositories">About the repositories</a>
-
-If you prefer to use Maven Central instead of JCenter you can use this configuration:
-
-```kotlin
-repositories {
-    mavenCentral()
-    jcenter {
-        content {
-            // just allow to include kotlinx projects
-            // detekt needs 'kotlinx-html' for the html report
-            includeGroup("org.jetbrains.kotlinx")
-        }
-    }
-}
-```

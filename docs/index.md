@@ -27,18 +27,8 @@ summary:
 Apply the following configuration to your Gradle project build file:
 
 ```kotlin
-buildscript {
-    repositories {
-        jcenter()
-    }
-}
-
 plugins {
     id("io.gitlab.arturbosch.detekt").version("{{ site.detekt_version }}")
-}
-
-repositories {
-    jcenter()
 }
 ```
 

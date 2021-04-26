@@ -36,10 +36,6 @@ plugins {
     id "io.gitlab.arturbosch.detekt" version "1.0.0-RC14"
 }
 
-repositories {
-    jcenter()
-}
-
 detekt {
     input = files(rootProject.rootDir)
     buildUponDefaultConfig = true
