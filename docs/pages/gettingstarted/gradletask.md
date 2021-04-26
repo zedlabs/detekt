@@ -29,21 +29,21 @@ repositories {
 }
 
 configurations {
-	detekt
+    detekt
 }
 
 task detekt(type: JavaExec) {
-	main = "io.gitlab.arturbosch.detekt.cli.Main"
-	classpath = configurations.detekt
-	def input = "$projectDir"
-	def config = "$projectDir/detekt.yml"
-	def exclude = ".*/build/.*,.*/resources/.*"
-	def params = [ '-i', input, '-c', config, '-ex', exclude]
-	args(params)
+    main = "io.gitlab.arturbosch.detekt.cli.Main"
+    classpath = configurations.detekt
+    def input = "$projectDir"
+    def config = "$projectDir/detekt.yml"
+    def exclude = ".*/build/.*,.*/resources/.*"
+    def params = [ '-i', input, '-c', config, '-ex', exclude]
+    args(params)
 }
 
 dependencies {
-	detekt 'io.gitlab.arturbosch.detekt:detekt-cli:{{ site.detekt_version }}'
+    detekt 'io.gitlab.arturbosch.detekt:detekt-cli:{{ site.detekt_version }}'
 }
 ```
 
