@@ -141,7 +141,7 @@ class UnnecessaryLetSpec : Spek({
             assertThat(findings).allMatch { it.message == MESSAGE_OMIT_LET }
         }
 
-        it("does not report lets used for function calls 1") {
+        it("reports unnecessary lets that can be replaced with an if 2") {
             val findings = subject.compileAndLintWithContext(
                 env,
                 """
@@ -151,10 +151,11 @@ class UnnecessaryLetSpec : Spek({
                     a?.let { that -> 1.plus(that) }
                 }"""
             )
-            assertThat(findings).isEmpty()
+            assertThat(findings).hasSize(2)
+            assertThat(findings).allMatch { it.message == MESSAGE_USE_IF }
         }
 
-        it("does not report lets used for function calls 2") {
+        it("does not report lets that avoids if/else or an extra variable") {
             val findings = subject.compileAndLintWithContext(
                 env,
                 """
@@ -192,7 +193,7 @@ class UnnecessaryLetSpec : Spek({
             assertThat(findings).isEmpty()
         }
 
-        it("does not report use of let with the safe call operator when we use an argument") {
+        it("does report use of let with the safe call operator when we use an argument") {
             val findings = subject.compileAndLintWithContext(
                 env,
                 """
@@ -205,39 +206,44 @@ class UnnecessaryLetSpec : Spek({
             assertThat(findings).hasSize(0)
         }
 
-        it("does not report lets with lambda body containing more than one statement") {
+        it("does report lets with lambda body containing more than one statement 1") {
+            val findings = subject.compileAndLintWithContext(
+                env,
+                """
+                fun f() {
+                    val a: Int = 1
+                    1.let {
+                        it.plus(1)
+                        it.plus(2)
+                    }
+                    1.let { that ->
+                        that.plus(1)
+                        that.plus(2)
+                    }
+                }"""
+            )
+            assertThat(findings).hasSize(2)
+            assertThat(findings).allMatch { it.message == MESSAGE_USE_WITH_OR_APPLY }
+        }
+
+        it("does report lets with lambda body containing more than one statement 2") {
             val findings = subject.compileAndLintWithContext(
                 env,
                 """
                 fun f() {
                     val a: Int? = null
-                    val b: Int = 1
-                    b.let {
-                        it.plus(1)
-                        it.plus(2)
-                    }
                     a?.let {
                         it.plus(1)
                         it.plus(2)
                     }
-                    b.let { that ->
-                        that.plus(1)
-                        that.plus(2)
-                    }
                     a?.let { that ->
                         that.plus(1)
                         that.plus(2)
-                    }
-                    a?.let { that ->
-                        1.plus(that)
-                    }
-                    ?.let {
-                        it.plus(1)
-                        it.plus(2)
                     }
                 }"""
             )
-            assertThat(findings).isEmpty()
+            assertThat(findings).hasSize(2)
+            assertThat(findings).allMatch { it.message == MESSAGE_USE_WITH_OR_APPLY }
         }
 
         it("does not report lets where it is used multiple times") {
@@ -376,8 +382,38 @@ class UnnecessaryLetSpec : Spek({
             val findings = subject.compileAndLintWithContext(env, content)
             assertThat(findings).isEmpty()
         }
+
+        it("does not report when a null check is needed for thread safety") {
+            val content = """
+                class A {
+                    var a: String? = null
+
+                    fun foo() {
+                        a?.let { print(it) }
+                    }
+                }
+            """
+            val findings = subject.compileAndLintWithContext(env, content)
+            assertThat(findings).isEmpty()
+        }
+
+        it("does report when a null check isn't needed for thread safety") {
+            val content = """
+                class A {
+                    val a: String? = null
+
+                    fun foo() {
+                        a?.let { print(it) }
+                    }
+                }
+            """
+            val findings = subject.compileAndLintWithContext(env, content)
+            assertThat(findings).hasSize(1)
+            assertThat(findings).allMatch { it.message == MESSAGE_USE_IF }
+        }
     }
 })
 
 private const val MESSAGE_OMIT_LET = "let expression can be omitted"
 private const val MESSAGE_USE_IF = "let expression can be replaced with a simple if"
+private const val MESSAGE_USE_WITH_OR_APPLY = "let expression can be replaced with a `with` or `apply`"
