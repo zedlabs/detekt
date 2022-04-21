@@ -7,6 +7,7 @@ plugins {
     `java-test-fixtures`
     idea
     alias(libs.plugins.pluginPublishing)
+    id("org.gradle.test-retry") version "1.3.2"
 }
 
 repositories {
@@ -149,4 +150,14 @@ tasks {
 with(components["java"] as AdhocComponentWithVariants) {
     withVariantsFromConfiguration(configurations["testFixturesApiElements"]) { skip() }
     withVariantsFromConfiguration(configurations["testFixturesRuntimeElements"]) { skip() }
+}
+
+tasks.withType<Test>().configureEach {
+    retry {
+        @Suppress("MagicNumber")
+        if (System.getenv().containsKey("CI")) {
+            maxRetries.set(2)
+            maxFailures.set(20)
+        }
+    }
 }
