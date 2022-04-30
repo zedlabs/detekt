@@ -281,22 +281,6 @@ arguments [cannot be used when calling Java functions][5]. Since this
 specific recommendation cannot be given for all encountered magic numbers,
 it is not possible to incorporate it into the generic issue description.
 
-## Contributing to the website
-
-Make sure to test your changes locally:
-
-- install ruby and jekyll
-- gem install bundler
-- bundler install
-- jekyll build
-- jekyll serve
-
-The following warning is expected until [Jekyll](https://github.com/jekyll/jekyll/issues/7947) adopts to Ruby 2.7.0:
-
-```
-warning: Using the last argument as keyword parameters is deprecated (Ruby 2.7.0)
-```
-
 ## Working on the Gradle plugin
 
 - Make changes to the core modules (e.g. adding a new CLI flag)
